@@ -6,7 +6,7 @@ esphome:
   name: "${device_name}"
   #name_add_mac_suffix: true
   friendly_name: "${location}智能插座"
-  friendly_name: "智能插座"
+  #friendly_name: "智能插座"
   comment: smart-plug-01
   project:
     name: carrot8848.smart-plug-01
