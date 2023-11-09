@@ -35,11 +35,8 @@ esp32_improv:
   status_indicator: gpio_led
 captive_portal:
 # dashboard_import:
-#   package_import_url:
-#     type: git
-#     url: https://gitee.com/carrot8848/ESPHome/
-#     ref: main
-#     file: Smart-Plug-01.yaml
+#   package_import_url: github://carrot8848/Smart-Plug-01/Smart-Plug-01.yaml@main
+#   import_full_config: False
 
 web_server:
   port: 80    
