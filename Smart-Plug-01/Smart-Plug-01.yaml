@@ -1,0 +1,177 @@
+substitutions:
+  device_name: "smart-plug"
+  #location: "客厅"  #放置位置
+
+esphome:
+  name: "${device_name}"
+  name_add_mac_suffix: true
+  # friendly_name: "${location}智能插座"
+  friendly_name: "智能插座"
+  comment: smart-plug-01
+  project:
+    name: carrot8848.smart-plug-01
+    version: "1.0.0"
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+
+wifi:
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Smart-Plug-01"
+    password: ""
+esp32_improv:
+  authorizer: none
+  status_indicator: gpio_led
+captive_portal:
+# dashboard_import:
+#   package_import_url:
+#     type: git
+#     url: https://gitee.com/carrot8848/ESPHome/
+#     ref: main
+#     file: Smart-Plug-01.yaml
+
+web_server:
+  port: 80    
+external_components:
+  - source: github://dentra/esphome-components
+uart:
+  id: uart_bus
+  tx_pin: 6
+  rx_pin: 5
+  baud_rate: 4800
+  stop_bits: 1
+  rx_buffer_size: 512
+  debug:
+    direction: BOTH
+    dummy_receiver: false
+    after:
+      delimiter: "\n"
+    sequence:
+      - lambda: UARTDebug::log_string(direction, bytes);
+sensor:
+  - platform: bl0942
+    uart_id: uart_bus
+    voltage:
+      name: 'Smart Plug Voltage'
+      id: voltage
+    current:
+      name: 'Smart Plug Current'
+      id: current
+    power:
+      name: 'Smart Plug Power'
+      id: power
+      filters:
+        multiply: -1
+    energy:
+      name: 'Smart Plug Energy'
+      accuracy_decimals: 2
+      id: energy
+    frequency:
+      name: "Smart Plug Frequency"
+      accuracy_decimals: 2
+      id: frequency
+
+    update_interval: 10s
+  - platform: "energy_statistics"
+    total: energy
+    energy_today:
+      name: "${device_name} Energy Today"
+    energy_yesterday:
+      name: "${device_name} Energy Yesterday"
+    energy_week:
+      name: "${device_name} Energy Week"
+    energy_month:
+      name: "${device_name} Energy Month"
+
+time:
+  - platform: sntp
+    id: my_time
+
+switch:
+  # 电源继电器_开
+  - platform: gpio
+    name: "Power_Switch_on"
+    id: relay_on
+    pin: 4
+    interlock: relay_off #互锁
+    disabled_by_default: true #不显示UI
+    on_turn_on:
+    - delay: 500ms
+    - switch.turn_off: relay_on
+  # 电源继电器_关
+  - platform: gpio
+    name: "Power_Switch_off"    
+    id: relay_off
+    interlock: relay_on #互锁
+    pin: 7
+    disabled_by_default: true #不显示UI
+    on_turn_on:
+    - delay: 500ms
+    - switch.turn_off: relay_off
+  # 电源继电器_开关
+  - platform: template
+    name: "Power Switch"
+    id: relay
+    lambda: |-
+      if (id(relay_status).state) {
+        return true;
+      } else {
+        return false;
+      }
+    turn_on_action:
+      - switch.turn_on: relay_on
+    turn_off_action:
+      - switch.turn_on: relay_off
+
+  - platform: restart
+    name: "Smart Plug controller Restart"
+  
+
+binary_sensor:
+  # 电源状态(继电器状态，检测继电器输出是否有电)
+  - platform: gpio
+    pin: 
+      number: 0
+      inverted: true
+      mode:
+        input: true
+    id: relay_status
+    name: "relay_status"
+    device_class: power
+    on_press:
+      then:
+        - light.turn_on: stat_led
+    on_release:
+      then:
+        - light.turn_off: stat_led
+  - platform: gpio
+    name: button1
+    pin: 
+      number: 10
+      inverted: true
+      mode:
+        input: true
+        
+    on_click:
+      then:
+        - switch.toggle: relay 
+output:
+  - platform: gpio
+    pin: 1
+    id: gpio_led
+light:
+  - platform: status_led
+    name: "status_led"
+    id: stat_led
+    output: gpio_led
