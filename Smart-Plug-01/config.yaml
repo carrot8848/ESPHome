@@ -1,15 +1,15 @@
 substitutions:
-  device_name: "smart-plug"
+  name: "smart-plug-01"
   location: "客厅"  #放置位置
 
 esphome:
-  name: "${device_name}"
-  #name_add_mac_suffix: true
+  name: "${name}"
+  name_add_mac_suffix: true
   friendly_name: "${location}智能插座"
   #friendly_name: "智能插座"
   comment: smart-plug-01
   project:
-    name: carrot8848.smart-plug-01
+    name: carrot8848.Smart-Plug-01
     version: "1.0.0"
 
 esp32:
@@ -28,16 +28,11 @@ ota:
 wifi:
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "Smart-Plug-01"
     password: ""
-esp32_improv:
-  authorizer: none
-  status_indicator: gpio_led
 captive_portal:
-# dashboard_import:
-#   package_import_url: github://carrot8848/Smart-Plug-01/Smart-Plug-01.yaml@main
-#   import_full_config: False
-
+dashboard_import:
+  package_import_url: github://carrot8848/ESPHome/Smart-Plug-01/config.yaml@main
+  import_full_config: False
 web_server:
   port: 80    
 external_components:
@@ -60,22 +55,22 @@ sensor:
   - platform: bl0942
     uart_id: uart_bus
     voltage:
-      name: 'Smart Plug Voltage'
+      name: '${name} 电压'
       id: voltage
     current:
-      name: 'Smart Plug Current'
+      name: 'S${name} 电流'
       id: current
     power:
-      name: 'Smart Plug Power'
+      name: '${name} 功率'
       id: power
       filters:
         multiply: -1
     energy:
-      name: 'Smart Plug Energy'
+      name: '${name} 电量'
       accuracy_decimals: 2
       id: energy
     frequency:
-      name: "Smart Plug Frequency"
+      name: "${name} 频率"
       accuracy_decimals: 2
       id: frequency
 
@@ -83,13 +78,13 @@ sensor:
   - platform: "energy_statistics"
     total: energy
     energy_today:
-      name: "${device_name} Energy Today"
+      name: "${name} 今日电量"
     energy_yesterday:
-      name: "${device_name} Energy Yesterday"
+      name: "${name} 昨日电量"
     energy_week:
-      name: "${device_name} Energy Week"
+      name: "${name} 本周电量"
     energy_month:
-      name: "${device_name} Energy Month"
+      name: "${name} 本月电量"
 
 time:
   - platform: sntp
