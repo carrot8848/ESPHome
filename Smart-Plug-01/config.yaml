@@ -55,22 +55,22 @@ sensor:
   - platform: bl0942
     uart_id: uart_bus
     voltage:
-      name: '${name} 电压'
+      name: '${name} voltage'
       id: voltage
     current:
-      name: 'S${name} 电流'
+      name: '${name} current'
       id: current
     power:
-      name: '${name} 功率'
+      name: '${name} power'
       id: power
       filters:
         multiply: -1
     energy:
-      name: '${name} 电量'
+      name: '${name} energy'
       accuracy_decimals: 2
       id: energy
     frequency:
-      name: "${name} 频率"
+      name: "${name} frequency"
       accuracy_decimals: 2
       id: frequency
 
@@ -78,13 +78,27 @@ sensor:
   - platform: "energy_statistics"
     total: energy
     energy_today:
-      name: "${name} 今日电量"
+      name: "${name} Energy Today"
     energy_yesterday:
-      name: "${name} 昨日电量"
+      name: "${name} Energy Yesterday"
     energy_week:
-      name: "${name} 本周电量"
+      name: "${name} Energy Week"
     energy_month:
-      name: "${name} 本月电量"
+      name: "${name} Energy Month"
+
+  - platform: wifi_signal # Reports the WiFi signal strength/RSSI in dB
+    name: "${name} WiFi Signal dB"
+    id: wifi_signal_db
+    update_interval: 60s
+    entity_category: "diagnostic"
+
+  - platform: copy # Reports the WiFi signal strength in %
+    source_id: wifi_signal_db
+    name: "${name} WiFi Signal Percent"
+    filters:
+      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+    unit_of_measurement: "%"
+    entity_category: "diagnostic"
 
 time:
   - platform: sntp
@@ -127,7 +141,7 @@ switch:
       - switch.turn_on: relay_off
 
   - platform: restart
-    name: "Smart Plug controller Restart"
+    name: "${name} controller Restart"
   
 
 binary_sensor:
@@ -158,12 +172,22 @@ binary_sensor:
     on_click:
       then:
         - switch.toggle: relay 
-output:
-  - platform: gpio
-    pin: 1
-    id: gpio_led
 light:
   - platform: status_led
     name: "status_led"
     id: stat_led
-    output: gpio_led
+    pin: 1
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: ${name} IP Address
+    ssid:
+      name: ${name} Connected SSID
+    bssid:
+      name: ${name} Connected BSSID
+    mac_address:
+      name: ${name} Mac Wifi Address
+    # scan_results:
+    #   name: ${name} Latest Scan Results
+    dns_address:
+      name: ${name} DNS Address
