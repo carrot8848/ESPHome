@@ -142,8 +142,6 @@ switch:
 
   - platform: restart
     name: "${name} controller Restart"
-  - platform: factory_reset
-    name: Restart with Factory Default Settings
 
 binary_sensor:
   # 电源状态(继电器状态，检测继电器输出是否有电)
