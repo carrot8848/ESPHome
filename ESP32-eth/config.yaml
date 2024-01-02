@@ -37,3 +37,8 @@ ethernet:
 
 web_server:
   port: 80
+uart:
+  tx_pin: 10
+  rx_pin: 9
+  baud_rate: 115200
+  id: uart_bus
