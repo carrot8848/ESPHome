@@ -24,7 +24,7 @@ ota:
 #   # Enable fallback hotspot (captive portal) in case wifi connection fails
 #   ap:
 #     ssid: "Esp32-Eth Fallback Hotspot"
-#     password: "vsCixg9fIvWx"
+#     password: ""
 
 # captive_portal:
 ethernet:
