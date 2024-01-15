@@ -1,0 +1,137 @@
+esphome:
+  name: ups-fan-controller2
+  friendly_name: ups-fan-controller2
+  project:
+    name: carrot8848.ups-fan-controller
+    version: "1.0.0"
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+wifi:
+  ap:
+captive_portal:
+web_server:
+  port: 80
+spi:
+  miso_pin: 1
+  mosi_pin: 5
+  clk_pin: 4
+output:
+  - platform: ledc
+    pin: GPIO8
+    id: Fan0_output
+    frequency: 10000
+    # min_power: 0.15
+    inverted: True
+    zero_means_zero: True
+
+  - platform: ledc
+    pin: GPIO3
+    id: Fan1_output
+    frequency: 1000
+    # min_power: 0.15
+    inverted: True
+    zero_means_zero: True
+
+  - platform: ledc
+    pin: GPIO18
+    id: Fan2_output
+    frequency: 15000
+    min_power: 0.4
+    inverted: True
+    zero_means_zero: True
+fan:
+  - platform: speed
+    id: fan0
+    output: Fan0_output
+    name: "Fan0"
+  - platform: speed
+    output: Fan1_output
+    name: "Fan1"
+  - platform: speed
+    output: Fan2_output
+    name: "Fan2"
+    restore_mode: ALWAYS_ON
+sensor:
+  - platform: pulse_counter
+    pin: 7
+    name: "Fan0 Speed"
+    unit_of_measurement: 'RPM'
+    filters:
+      - multiply: 0.5
+      # - lambda: |-
+      #     if (x <= 1500) return x;
+      #     else return {};
+    count_mode:
+      rising_edge: INCREMENT
+      falling_edge: DISABLE
+    update_interval: 5s
+
+  - platform: pulse_counter
+    pin: 19
+    name: "Fan2 Speed"
+    unit_of_measurement: 'RPM'
+    filters:
+      - multiply: 0.5
+      # - lambda: |-
+      #     if (x <= 1500) return x;
+      #     else return {};
+    count_mode:
+      rising_edge: INCREMENT
+      falling_edge: DISABLE
+    update_interval: 5s
+
+  - platform: max31865
+    id: temp
+    update_interval: 2s
+    name: "PT100 Temperature"
+    cs_pin: 10
+    reference_resistance: 430 Ω
+    rtd_nominal_resistance: 100 Ω
+    mains_filter: 50Hz
+    rtd_wires: 4
+  - platform: pid
+    name: "PID Climate Result"
+    type: RESULT
+  - platform: pid
+    name: "PID Climate ERROR"
+    type: ERROR
+  - platform: pid
+    name: "PID Climate COOL"
+    type: cool
+status_led:
+  pin: 
+    number: GPIO6
+    inverted: True
+
+climate:
+  - platform: pid
+    visual: 
+      min_temperature: 20°C
+      max_temperature: 50°C
+    name: "UPS Temperature Controller"
+    sensor: temp
+    default_target_temperature: 40°C
+    cool_output: Fan2_output
+    control_parameters:
+      kp: 0.05
+      ki: 0.001
+      kd: 0
+      output_averaging_samples: 5      # smooth the output over 5 samples
+      derivative_averaging_samples: 5  # smooth the derivative value over 10 samples
+    deadband_parameters:
+      threshold_high: 2°C       # deadband within +/-0.5°C of target_temperature
+      threshold_low: -5°C
+      kp_multiplier: 0.0   # proportional gain turned off inside deadband
+      ki_multiplier: 0.05  # integral accumulates at only 5% of normal ki
+      kd_multiplier: 0.0   # derviative is turned off inside deadband
+    
