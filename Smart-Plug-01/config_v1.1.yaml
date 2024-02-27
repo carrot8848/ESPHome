@@ -106,7 +106,7 @@ switch:
   - platform: gpio
     name: "Power_Switch_on"
     id: relay_on
-    pin: 4
+    pin: 0
     interlock: relay_off #互锁
     disabled_by_default: true #不显示UI
     on_turn_on:
@@ -117,7 +117,7 @@ switch:
     name: "Power_Switch_off"    
     id: relay_off
     interlock: relay_on #互锁
-    pin: 7
+    pin: 1
     disabled_by_default: true #不显示UI
     on_turn_on:
     - delay: 500ms
@@ -144,7 +144,7 @@ binary_sensor:
   # 电源状态(继电器状态，检测继电器输出是否有电)
   - platform: gpio
     pin: 
-      number: 0
+      number: 3
       inverted: true
       mode:
         input: true
@@ -160,7 +160,7 @@ binary_sensor:
   - platform: gpio
     name: button1
     pin: 
-      number: 10
+      number: 4
       inverted: true
       mode:
         input: true
@@ -172,7 +172,7 @@ light:
   - platform: status_led
     name: "status_led"
     id: stat_led
-    pin: 1
+    pin: 10
 text_sensor:
   - platform: wifi_info
     ip_address:
