@@ -54,12 +54,15 @@ sensor:
     voltage:
       name: '${name} voltage'
       id: voltage
+      accuracy_decimals: 2
     current:
       name: '${name} current'
       id: current
+      accuracy_decimals: 2
     power:
       name: '${name} power'
       id: power
+      accuracy_decimals: 2
       filters:
         multiply: -1
     energy:
