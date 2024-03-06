@@ -22,7 +22,20 @@ logger:
 
 # Enable Home Assistant API
 api:
-
+  on_client_connected:
+    - logger.log:
+        format: "Client %s connected to API with IP %s"
+        args: ["client_info.c_str()", "client_address.c_str()"]
+    - if:
+        condition:
+          binary_sensor.is_on: relay_status
+        then:
+          - logger.log: "Power is ON!"
+          - light.turn_on: status_led
+          - delay: 2s
+        else:
+          - logger.log: "Power is OFF!"
+          - light.turn_off: status_led
 ota:
 
 wifi:
