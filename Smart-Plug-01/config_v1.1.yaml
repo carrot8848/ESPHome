@@ -204,8 +204,3 @@ text_sensor:
     #   name: ${name} Latest Scan Results
     dns_address:
       name: ${name} DNS Address
-button:
-  - platform: template
-    name: "Template Button"
-    on_press:
-      - logger.log: Button Pressed
