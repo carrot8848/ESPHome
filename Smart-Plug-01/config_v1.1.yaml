@@ -31,11 +31,11 @@ api:
           binary_sensor.is_on: relay_status
         then:
           - logger.log: "Power is ON!"
-          - light.turn_on: status_led
+          - light.turn_on: stat_led
           - delay: 2s
         else:
           - logger.log: "Power is OFF!"
-          - light.turn_off: status_led
+          - light.turn_off: stat_led
 ota:
 
 wifi:
