@@ -129,6 +129,7 @@ switch:
   - platform: template
     name: "Power Switch"
     id: relay
+    restore_mode: disabled
     lambda: |-
       if (id(relay_status).state) {
         return true;
