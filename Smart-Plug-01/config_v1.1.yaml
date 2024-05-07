@@ -165,6 +165,7 @@ binary_sensor:
       inverted: true
       mode:
         input: true
+        pullup: True
     id: relay_status
     name: "relay_status"
     device_class: power
@@ -181,7 +182,7 @@ binary_sensor:
       inverted: true
       mode:
         input: true
-        
+        pullup: True
     on_click:
       then:
         - switch.toggle: relay 
