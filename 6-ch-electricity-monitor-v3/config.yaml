@@ -34,9 +34,8 @@ wifi:
     password: ""
 
 captive_portal:
-dashboard_import:
-  package_import_url: github://carrot8848/ESPHome/Smart-Plug-01/config_v1.1.yaml@main
-  import_full_config: False    
+web_server:
+  port: 80
 external_components:
   - source:
       type: git
@@ -51,26 +50,23 @@ uart:
     tx_pin: 5
     baud_rate: 9600
 #如需使用PZEM-004T，取消下方注释，PZEM-004T和PZEM-DC无法同时使用
-  - id: uart_bus2
-    rx_pin: 6
-    tx_pin: 7
-    baud_rate: 9600
+  # - id: uart_bus2
+  #   rx_pin: 6
+  #   tx_pin: 7
+  #   baud_rate: 9600
 #如需使用PZEM-DC，取消下方注释，PZEM-004T和PZEM-DC无法同时使用
   # - id: uart_bus3
   #   rx_pin: 0
   #   tx_pin: 1
   #   baud_rate: 9600
-
-modbus:
-  - uart_id: uart_bus2
-  #send_wait_time: 50ms
-    id: mod_bus1
-  # - uart_id: uart_bus3
-  # #send_wait_time: 50ms
-  #   id: mod_bus2
-# stream_server:
-#   uart_id: uart_bus
-#   port: 6638
+  
+#如需使用PZEM-004T，取消下方注释，PZEM-004T和PZEM-DC无法同时使用
+# modbus:
+#   - uart_id: uart_bus2
+#     id: mod_bus1
+#如需使用PZEM-DC，取消下方注释，PZEM-004T和PZEM-DC无法同时使用
+#   - uart_id: uart_bus3
+#     id: mod_bus2
 
 sensor:
   - platform: bl0906
@@ -192,41 +188,42 @@ sensor:
       name: "${ch6} energy_month"
 
 #如需使用PZEM-004T，取消下方注释，PZEM-004T和PZEM-DC无法同时使用
-  - platform: pzemac
-    current:
-      name: "total current"
-    voltage:
-      name: "voltage"
-    energy:
-      name: "total energy"
-      id: energy
-      filters:
-        # Multiplication factor from Wh to kWh is 0.001
-        - multiply: 0.001
-      unit_of_measurement: kWh
-    power:
-      name: "total power"
-      id: pzemac_power
-      filters:
-        # Multiplication factor from W to kW is 0.001
-       - multiply: 0.001
-      unit_of_measurement: kW
-    frequency:
-      name: "Frequency"
-    power_factor:
-      name: "total power factor"
-    update_interval: 10s
-    modbus_id: mod_bus1
-  - platform: "energy_statistics"
-    total: energy
-    energy_today:
-      name: "energy_today"
-    energy_yesterday:
-      name: "energy_yesterday"
-    energy_week:
-      name: "energy_week"
-    energy_month:
-      name: "energy_month"
+  # - platform: pzemac
+  #   current:
+  #     name: "total current"
+  #   voltage:
+  #     name: "voltage"
+  #   energy:
+  #     name: "total energy"
+  #     id: energy
+  #     filters:
+  #       # Multiplication factor from Wh to kWh is 0.001
+  #       - multiply: 0.001
+  #     unit_of_measurement: kWh
+  #   power:
+  #     name: "total power"
+  #     id: pzemac_power
+  #     filters:
+  #       # Multiplication factor from W to kW is 0.001
+  #      - multiply: 0.001
+  #     unit_of_measurement: kW
+  #   frequency:
+  #     name: "Frequency"
+  #   power_factor:
+  #     name: "total power factor"
+  #   update_interval: 10s
+  #   modbus_id: mod_bus1
+  # - platform: "energy_statistics"
+  #   total: energy
+  #   energy_today:
+  #     name: "energy_today"
+  #   energy_yesterday:
+  #     name: "energy_yesterday"
+  #   energy_week:
+  #     name: "energy_week"
+  #   energy_month:
+  #     name: "energy_month"
+  
 #如需使用PZEM-DC，取消下方注释，PZEM-004T和PZEM-DC无法同时使用
   # - platform: pzemdc
   #   modbus_id: mod_bus2
