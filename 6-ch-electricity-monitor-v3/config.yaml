@@ -38,7 +38,10 @@ dashboard_import:
   package_import_url: github://carrot8848/ESPHome/Smart-Plug-01/config_v1.1.yaml@main
   import_full_config: False    
 external_components:
-  - source: my_components  
+  - source:
+      type: git
+      url: https://github.com/carrot8848/ESPHome/
+      ref: main
   - source: github://dentra/esphome-components
 status_led:
   pin: GPIO10
