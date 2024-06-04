@@ -32,7 +32,9 @@ web_server:
 external_components:
   - source: github://dentra/esphome-components
 status_led:
-  pin: GPIO19
+  pin: 
+    number: GPIO19
+    inverted: True
 uart:
   id: uart_bus
   rx_pin: GPIO5
