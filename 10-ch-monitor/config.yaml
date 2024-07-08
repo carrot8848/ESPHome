@@ -62,6 +62,10 @@ uart:
     rx_pin: 4
     tx_pin: 5
     baud_rate: 4800
+  - id: uart_bus2
+    rx_pin: 6
+    tx_pin: 7
+    baud_rate: 9600
 modbus:
   - uart_id: uart_bus2
     id: mod_bus1
