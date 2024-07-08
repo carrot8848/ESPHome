@@ -50,10 +50,10 @@ web_server:
   port: 80
 external_components:
   - source: my_components
-  # - source:
-  #     type: git
-  #     url: https://github.com/carrot8848/ESPHome/
-  #     ref: main
+    - source:
+      type: git
+      url: https://github.com/carrot8848/ESPHome
+      ref: main
   - source: github://dentra/esphome-components
 status_led:
   pin: GPIO1
@@ -62,13 +62,6 @@ uart:
     rx_pin: 4
     tx_pin: 5
     baud_rate: 4800
-#如需使用PZEM-004T，取消下方注释，PZEM-004T和PZEM-DC无法同时使用
-  - id: uart_bus2
-    rx_pin: 6
-    tx_pin: 7
-    baud_rate: 9600
-  
-#如需使用PZEM-004T，取消下方注释，PZEM-004T和PZEM-DC无法同时使用
 modbus:
   - uart_id: uart_bus2
     id: mod_bus1
@@ -282,7 +275,6 @@ sensor:
     energy_month:
       name: "${ch10} energy_month"
 
-#如需使用PZEM-004T，取消下方注释，PZEM-004T和PZEM-DC无法同时使用
   - platform: pzemac
     current:
       name: "PZEM Current"
@@ -332,13 +324,6 @@ sensor:
       - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
     unit_of_measurement: "%"
     entity_category: "diagnostic"
-  - platform: debug
-    free:
-      name: "Heap Free"
-    block:
-      name: "Heap Max Block"
-    loop_time:
-      name: "Loop Time"
 
 time:
   - platform: sntp
@@ -360,10 +345,5 @@ text_sensor:
     #   name: Energy_meter Latest Scan Results
     dns_address:
       name: Energy_meter DNS Address 
-  - platform: debug
-    device:
-      name: "Device Info"
-    reset_reason:
-      name: "Reset Reason"
 
 
