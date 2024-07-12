@@ -16,6 +16,7 @@ logger:
 api:
 
 ota:
+  - platform: esphome
 wifi:
   ap:
 captive_portal:
@@ -29,9 +30,10 @@ output:
   - platform: ledc
     pin: GPIO8
     id: Fan0_output
-    frequency: 10000
-    # min_power: 0.15
+    frequency: 15000
+    min_power: 0.4
     inverted: True
+    channel: 1
     zero_means_zero: True
 
   - platform: ledc
@@ -40,6 +42,7 @@ output:
     frequency: 1000
     # min_power: 0.15
     inverted: True
+    channel: 3
     zero_means_zero: True
 
   - platform: ledc
@@ -48,6 +51,7 @@ output:
     frequency: 15000
     min_power: 0.4
     inverted: True
+    channel: 5
     zero_means_zero: True
 fan:
   - platform: speed
