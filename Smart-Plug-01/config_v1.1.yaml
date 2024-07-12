@@ -37,7 +37,7 @@ api:
           - logger.log: "Power is OFF!"
           - light.turn_off: stat_led
 ota:
-
+  - platform: esphome
 wifi:
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
