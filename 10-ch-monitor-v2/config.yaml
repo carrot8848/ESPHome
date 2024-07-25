@@ -295,7 +295,7 @@ sensor:
       name: "PZEM Frequency"
     power_factor:
       name: "PZEM Power Factor"
-    update_interval: 10s
+    update_interval: 13s
     modbus_id: mod_bus1
   - platform: "energy_statistics"
     total: energy
