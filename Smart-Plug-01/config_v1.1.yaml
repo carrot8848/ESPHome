@@ -11,7 +11,8 @@ esphome:
   project:
     name: carrot8848.Smart-Plug-01
     version: "1.1.0"
-
+preferences:
+  flash_write_interval: 10min
 esp32:
   board: esp32-c3-devkitm-1
   framework:
@@ -43,6 +44,13 @@ wifi:
   ap:
     password: ""
 captive_portal:
+globals:
+   - id: energy_
+     type: float
+     restore_value: yes
+   - id: energy_last  #energy from last power cycle
+     type: float
+     restore_value: no
 web_server:
   port: 80    
 external_components:
@@ -54,42 +62,61 @@ uart:
   baud_rate: 4800
   stop_bits: 1
   rx_buffer_size: 512
-  debug:
-    direction: BOTH
-    dummy_receiver: false
-    after:
-      delimiter: "\n"
-    sequence:
-      - lambda: UARTDebug::log_string(direction, bytes);
 sensor:
   - platform: bl0942
     uart_id: uart_bus
     voltage:
       name: '${name} voltage'
-      id: voltage
       accuracy_decimals: 2
+      id: voltage
     current:
       name: '${name} current'
-      id: current
       accuracy_decimals: 2
+      id: current
     power:
       name: '${name} power'
       id: power
       accuracy_decimals: 2
       filters:
-        multiply: -1
+        multiply: -0.967
     energy:
       name: '${name} energy'
       accuracy_decimals: 2
+      internal: True
       id: energy
+      on_value: 
+        then:
+          - if:
+              condition:
+                sensor.in_range: 
+                  id: energy
+                  above: 0.01
+              then: 
+                globals.set: 
+                  id: energy_
+                  value: !lambda return id(energy_last) + x;
+              else:
+                - globals.set: 
+                    id: energy_last
+                    value: !lambda return id(energy_);
     frequency:
       name: "${name} frequency"
       accuracy_decimals: 2
       id: frequency
+    update_interval: 10s
 
+  - platform: template
+    name: "${name} Total Energy"
+    id: total_energy
+    unit_of_measurement: kWh
+    device_class: energy
+    state_class: total_increasing
+    accuracy_decimals: 2
+    lambda: |-
+      return id(energy_);
     update_interval: 10s
   - platform: "energy_statistics"
-    total: energy
+    total: total_energy
     energy_today:
       name: "${name} Energy Today"
     energy_yesterday:
@@ -156,6 +183,9 @@ switch:
 
   - platform: restart
     name: "${name} controller Restart"
+  - platform: factory_reset
+    name: Restart with Factory Default Settings
+    disabled_by_default: true
 
 binary_sensor:
   # 电源状态(继电器状态，检测继电器输出是否有电)
@@ -205,3 +235,5 @@ text_sensor:
     #   name: ${name} Latest Scan Results
     dns_address:
       name: ${name} DNS Address
+  - platform: version
+    name: "ESPHome Version"
