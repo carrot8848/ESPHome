@@ -22,7 +22,8 @@ esp32:
   board: esp32-c3-devkitm-1
   framework:
     type: arduino
-
+preferences:
+  flash_write_interval: 30min
 # Enable logging
 logger:
 # Enable Home Assistant API
@@ -30,6 +31,9 @@ api:
 
 ota:
   - platform: esphome
+    on_begin:
+      then:
+        - component.suspend: read_sensors
 wifi:
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
