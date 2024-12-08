@@ -1,0 +1,505 @@
+substitutions:
+  name: "6-ch-monitor-2_0"
+  friendly_name: "6-ch-monitor-2_0"
+  ch1: "ch_1"   #可根据需要修改名称
+  ch2: "ch_2"   #可根据需要修改名称
+  ch3: "ch_3"    #可根据需要修改名称
+  ch4: "ch_4"    #可根据需要修改名称
+  ch5: "ch_5"  #可根据需要修改名称
+  ch6: "ch_6"     #可根据需要修改名称
+esphome:
+  name: "${name}"
+  name_add_mac_suffix: True
+  friendly_name: "${friendly_name}"
+  project:
+    name: carrot8848.6-ch-monitor
+    version: "2.0"
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: arduino
+preferences:
+  flash_write_interval: 30min
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+  - platform: esphome
+    on_begin:
+      then:
+        - component.suspend: read_sensors
+wifi:
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    # ssid: "${name}"
+    password: ""
+
+captive_portal:
+globals:
+  - id: ch1_energy_
+    type: float
+    restore_value: yes
+  - id: ch1_energy_last  #energy from last power cycle
+    type: float
+    restore_value: yes
+  - id: ch2_energy_
+    type: float
+    restore_value: yes
+  - id: ch2_energy_last  #energy from last power cycle
+    type: float
+    restore_value: yes
+  - id: ch3_energy_
+    type: float
+    restore_value: yes
+  - id: ch3_energy_last  #energy from last power cycle
+    type: float
+    restore_value: yes
+  - id: ch4_energy_
+    type: float
+    restore_value: yes
+  - id: ch4_energy_last  #energy from last power cycle
+    type: float
+    restore_value: yes
+  - id: ch5_energy_
+    type: float
+    restore_value: yes
+  - id: ch5_energy_last  #energy from last power cycle
+    type: float
+    restore_value: yes
+  - id: ch6_energy_
+    type: float
+    restore_value: yes
+  - id: ch6_energy_last  #energy from last power cycle
+    type: float
+    restore_value: yes
+  - id: chs6_energy_ 
+    type: float
+    restore_value: yes
+  - id: chs6_energy_last   #energy from last power cycle
+    type: float
+    restore_value: yes
+web_server:
+  port: 80
+  local: True
+  version: 3
+  sorting_groups:
+    - id: pzem_004T
+      name: "PZEM-004T"
+      sorting_weight: 10
+    - id: current
+      name: "Current"
+      sorting_weight: 20
+    - id: power
+      name: "Power"
+      sorting_weight: 30
+    - id: energy
+      name: "Energy"
+      sorting_weight: 40
+    - id: miscellaneous
+      name: "Miscellaneous"
+      sorting_weight: 50
+  
+external_components:
+  - source:
+      type: git
+      url: https://github.com/carrot8848/ESPHome/
+      ref: main
+status_led:
+  pin: GPIO10
+uart:
+  - id: uart_bus2
+    rx_pin: 5
+    tx_pin: 4
+    baud_rate: 9600
+  - id: uart_bus
+    rx_pin: 6
+    tx_pin: 7
+    baud_rate: 19200
+
+modbus:
+  - uart_id: uart_bus2
+  #send_wait_time: 50ms
+    id: mod_bus1
+
+sensor:
+  - platform: bl0906
+    id: sensor_bl0906
+    uart_id: uart_bus
+    update_interval: never
+    frequency:
+      name: 'Frequency'
+      web_server:
+          sorting_group_id: miscellaneous
+    temperature:
+      name: 'Temperature'
+      web_server:
+          sorting_group_id: miscellaneous
+    voltage:
+      name: 'Voltage'
+      web_server:
+          sorting_group_id: miscellaneous
+    channel_1:
+      current:
+        name: "${ch1} current"
+        web_server:
+          sorting_group_id: current
+      power:
+        name: "${ch1} power"
+        web_server:
+          sorting_group_id: power
+      energy:
+        id: ch1_energy
+        name: "${ch1} energy"
+        internal: true
+        on_value: 
+          then:
+            - if:
+                condition:
+                  sensor.in_range: 
+                    id: ch1_energy
+                    above: 0.01
+                then: 
+                  globals.set: 
+                    id: ch1_energy_
+                    value: !lambda return id(ch1_energy_last) + x;
+                else:
+                  - globals.set: 
+                      id: ch1_energy_last
+                      value: !lambda return id(ch1_energy_);
+    channel_2:
+      current:
+        name: "${ch2} current"
+        web_server:
+          sorting_group_id: current
+      power:
+        name: "${ch2} power"
+        web_server:
+          sorting_group_id: power
+      energy:
+        id: ch2_energy
+        name: "${ch2} energy"
+        internal: true
+        on_value: 
+          then:
+            - if:
+                condition:
+                  sensor.in_range: 
+                    id: ch2_energy
+                    above: 0.01
+                then: 
+                  globals.set: 
+                    id: ch2_energy_
+                    value: !lambda return id(ch2_energy_last) + x;
+                else:
+                  - globals.set: 
+                      id: ch2_energy_last
+                      value: !lambda return id(ch2_energy_);
+    channel_3:
+      current:
+        name: "${ch3} current"
+        web_server:
+          sorting_group_id: current
+      power:
+        name: "${ch3} power"
+        web_server:
+          sorting_group_id: power
+      energy:
+        id: ch3_energy
+        name: "${ch3} energy"
+        internal: true
+        on_value: 
+          then:
+            - if:
+                condition:
+                  sensor.in_range: 
+                    id: ch3_energy
+                    above: 0.01
+                then: 
+                  globals.set: 
+                    id: ch3_energy_
+                    value: !lambda return id(ch3_energy_last) + x;
+                else:
+                  - globals.set: 
+                      id: ch3_energy_last
+                      value: !lambda return id(ch3_energy_);
+    channel_4:
+      current:
+        name: "${ch4} current"
+        web_server:
+          sorting_group_id: current
+      power:
+        name: "${ch4} power"
+        web_server:
+          sorting_group_id: power
+      energy:
+        id: ch4_energy
+        name: "${ch4} energy"
+        internal: true
+        on_value: 
+          then:
+            - if:
+                condition:
+                  sensor.in_range: 
+                    id: ch4_energy
+                    above: 0.01
+                then: 
+                  globals.set: 
+                    id: ch4_energy_
+                    value: !lambda return id(ch4_energy_last) + x;
+                else:
+                  - globals.set: 
+                      id: ch4_energy_last
+                      value: !lambda return id(ch4_energy_);
+    channel_5:
+      current:
+        name: "${ch5} current"
+        web_server:
+          sorting_group_id: current
+      power:
+        name: "${ch5} power"
+        web_server:
+          sorting_group_id: power
+      energy:
+        id: ch5_energy
+        name: "${ch5} energy"
+        internal: true
+        on_value: 
+          then:
+            - if:
+                condition:
+                  sensor.in_range: 
+                    id: ch5_energy
+                    above: 0.01
+                then: 
+                  globals.set: 
+                    id: ch5_energy_
+                    value: !lambda return id(ch5_energy_last) + x;
+                else:
+                  - globals.set: 
+                      id: ch5_energy_last
+                      value: !lambda return id(ch5_energy_);
+    channel_6:
+      current:
+        name: "${ch6} current"
+        web_server:
+          sorting_group_id: current
+      power:
+        name: "${ch6} power"
+        web_server:
+          sorting_group_id: power
+      energy:
+        id: ch6_energy
+        name: "${ch6} energy"
+        internal: true
+        on_value: 
+          then:
+            - if:
+                condition:
+                  sensor.in_range: 
+                    id: ch6_energy
+                    above: 0.01
+                then: 
+                  globals.set: 
+                    id: ch6_energy_
+                    value: !lambda return id(ch6_energy_last) + x;
+                else:
+                  - globals.set: 
+                      id: ch6_energy_last
+                      value: !lambda return id(ch6_energy_);
+    total_energy:
+      id: chs6_energy_sum
+      name: "6-chs sum energy" 
+      internal: true
+      on_value: 
+         then:
+           - if:
+               condition:
+                 sensor.in_range: 
+                   id: ch2_energy
+                   above: 0.01
+               then: 
+                 globals.set: 
+                   id: ch2_energy_
+                   value: !lambda return id(ch2_energy_last) + x;
+               else:
+                 - globals.set: 
+                     id: ch2_energy_last
+                     value: !lambda return id(ch2_energy_);
+    total_power:
+      name: '6 Chs Total Power'
+      web_server:
+          sorting_group_id: miscellaneous
+
+  - platform: template
+    name: "${ch1} Total Energy"
+    id: ch1_total_energy
+    unit_of_measurement: kWh
+    device_class: energy
+    state_class: total_increasing
+    accuracy_decimals: 2
+    lambda: |-
+      return id(ch1_energy_);
+    update_interval: 10s
+    web_server:
+          sorting_group_id: energy
+  - platform: template
+    name: "${ch2} Total Energy"
+    id: ch2_total_energy
+    unit_of_measurement: kWh
+    device_class: energy
+    state_class: total_increasing
+    accuracy_decimals: 2
+    lambda: |-
+      return id(ch2_energy_);
+    update_interval: 10s
+    web_server:
+          sorting_group_id: energy
+  - platform: template
+    name: "${ch3} Total Energy"
+    id: ch3_total_energy
+    unit_of_measurement: kWh
+    device_class: energy
+    state_class: total_increasing
+    accuracy_decimals: 2
+    lambda: |-
+      return id(ch3_energy_);
+    update_interval: 10s
+    web_server:
+          sorting_group_id: energy
+  - platform: template
+    name: "${ch4} Total Energy"
+    id: ch4_total_energy
+    unit_of_measurement: kWh
+    device_class: energy
+    state_class: total_increasing
+    accuracy_decimals: 2
+    lambda: |-
+      return id(ch4_energy_);
+    update_interval: 10s
+    web_server:
+          sorting_group_id: energy
+  - platform: template
+    name: "${ch5} Total Energy"
+    id: ch5_total_energy
+    unit_of_measurement: kWh
+    device_class: energy
+    state_class: total_increasing
+    accuracy_decimals: 2
+    lambda: |-
+      return id(ch5_energy_);
+    update_interval: 10s
+    web_server:
+          sorting_group_id: energy
+  - platform: template
+    name: "${ch6} Total Energy"
+    id: ch6_total_energy
+    unit_of_measurement: kWh
+    device_class: energy
+    state_class: total_increasing
+    accuracy_decimals: 2
+    lambda: |-
+      return id(ch6_energy_);
+    update_interval: 10s
+    web_server:
+          sorting_group_id: energy
+  - platform: template
+    name: "6 ch Sum Total Energy"
+    id: chs6_total_energy
+    unit_of_measurement: kWh
+    device_class: energy
+    state_class: total_increasing
+    accuracy_decimals: 2
+    lambda: |-
+      return id(chs6_energy_);
+    update_interval: 10s
+    web_server:
+          sorting_group_id: energy
+
+  - platform: pzemac
+    id: sensor_pzem
+    update_interval: never
+    current:
+      name: "PZEM Current"
+      web_server:
+          sorting_group_id: pzem_004T
+    voltage:
+      name: "PZEM Voltage"
+      web_server:
+          sorting_group_id: pzem_004T
+    energy:
+      name: "PZEM Energy"
+      id: pzem_energy
+      filters:
+        # Multiplication factor from Wh to kWh is 0.001
+        - multiply: 0.001
+      unit_of_measurement: kWh
+      web_server:
+          sorting_group_id: pzem_004T
+    power:
+      name: "PZEM Power"
+      id: pzemac_power
+      filters:
+        # Multiplication factor from W to kW is 0.001
+       - multiply: 0.001
+      unit_of_measurement: kW
+      web_server:
+          sorting_group_id: pzem_004T
+    frequency:
+      name: "PZEM Frequency"
+      web_server:
+          sorting_group_id: pzem_004T
+    power_factor:
+      name: "PZEM Power Factor"
+      web_server:
+          sorting_group_id: pzem_004T
+    modbus_id: mod_bus1
+
+  - platform: wifi_signal # Reports the WiFi signal strength/RSSI in dB
+    name: "Energy_meter WiFi Signal dB"
+    id: wifi_signal_db
+    update_interval: 60s
+    entity_category: "diagnostic"
+
+  - platform: copy # Reports the WiFi signal strength in %
+    source_id: wifi_signal_db
+    name: "Energy_meter WiFi Signal Percent"
+    filters:
+      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+    unit_of_measurement: "%"
+    entity_category: "diagnostic"
+switch:
+  - platform: restart
+    name: "${name} controller Restart"
+  - platform: factory_reset
+    name: Restart with Factory Default Settings
+interval:
+  - interval: 10s
+    id: read_sensors
+    then: 
+      - component.update: sensor_bl0906
+      - delay: 0.5s
+      - component.update: sensor_pzem
+
+time:
+  - platform: sntp
+    id: my_time
+    servers: 120.25.108.11
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: Energy_meter IP Address
+    ssid:
+      name: Energy_meter Connected SSID
+    bssid:
+      name: Energy_meter Connected BSSID
+    mac_address:
+      name: Energy_meter Mac Wifi Address
+    # scan_results:
+    #   name: Energy_meter Latest Scan Results
+    dns_address:
+      name: Energy_meter DNS Address 
+    
