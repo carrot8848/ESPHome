@@ -102,12 +102,7 @@ web_server:
     - id: miscellaneous
       name: "Miscellaneous"
       sorting_weight: 50
-  
-external_components:
-  - source:
-      type: git
-      url: https://github.com/carrot8848/ESPHome/
-      ref: main
+
 status_led:
   pin: GPIO10
 uart:
